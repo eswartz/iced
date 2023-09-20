@@ -1,6 +1,8 @@
 //! Configure your application.
+
 use crate::window;
 use crate::{Font, Pixels};
+use crate::graphics::ImageFiltering;
 
 /// The settings of an application.
 #[derive(Debug, Clone)]
@@ -49,6 +51,10 @@ pub struct Settings<Flags> {
     ///
     /// [`Application`]: crate::Application
     pub exit_on_close_request: bool,
+
+    /// The filtering methods to use for images or SVG rendering.
+    ///
+    pub image_filtering: ImageFiltering,
 }
 
 impl<Flags> Settings<Flags> {
@@ -66,6 +72,7 @@ impl<Flags> Settings<Flags> {
             default_text_size: default_settings.default_text_size,
             antialiasing: default_settings.antialiasing,
             exit_on_close_request: default_settings.exit_on_close_request,
+            image_filtering: default_settings.image_filtering,
         }
     }
 }
@@ -83,6 +90,7 @@ where
             default_text_size: Pixels(16.0),
             antialiasing: false,
             exit_on_close_request: true,
+            image_filtering: Default::default(),
         }
     }
 }

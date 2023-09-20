@@ -9,7 +9,7 @@ mod vector;
 use atlas::Atlas;
 
 use crate::core::{Rectangle, Size};
-use crate::graphics::Transformation;
+use crate::graphics::{Transformation, ImageFiltering, FilterQuality};
 use crate::layer;
 use crate::Buffer;
 
@@ -139,16 +139,26 @@ impl Layer {
 }
 
 impl Pipeline {
-    pub fn new(device: &wgpu::Device, format: wgpu::TextureFormat) -> Self {
+    pub fn new(device: &wgpu::Device, format: wgpu::TextureFormat, image_filtering: ImageFiltering) -> Self {
         use wgpu::util::DeviceExt;
+
+        let to_wgpu_filter_mode = |mode| {
+            match mode {
+                FilterQuality::Low => wgpu::FilterMode::Nearest,
+                FilterQuality::Medium | FilterQuality::High => wgpu::FilterMode::Linear,
+            }
+        };
+        let min_filter = to_wgpu_filter_mode(image_filtering.min_filter);
+        let mag_filter = to_wgpu_filter_mode(image_filtering.mag_filter);
+        let mipmap_filter = to_wgpu_filter_mode(image_filtering.mipmap_filter);
 
         let sampler = device.create_sampler(&wgpu::SamplerDescriptor {
             address_mode_u: wgpu::AddressMode::ClampToEdge,
             address_mode_v: wgpu::AddressMode::ClampToEdge,
             address_mode_w: wgpu::AddressMode::ClampToEdge,
-            mag_filter: wgpu::FilterMode::Linear,
-            min_filter: wgpu::FilterMode::Linear,
-            mipmap_filter: wgpu::FilterMode::Linear,
+            mag_filter,
+            min_filter,
+            mipmap_filter,
             ..Default::default()
         });
 

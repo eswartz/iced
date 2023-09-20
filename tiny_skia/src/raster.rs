@@ -8,12 +8,16 @@ use std::collections::hash_map;
 
 pub struct Pipeline {
     cache: RefCell<Cache>,
+    min_filter_quality: tiny_skia::FilterQuality,
+    mag_filter_quality: tiny_skia::FilterQuality,
 }
 
 impl Pipeline {
-    pub fn new() -> Self {
+    pub fn new(min_filter_quality: tiny_skia::FilterQuality, mag_filter_quality: tiny_skia::FilterQuality) -> Self {
         Self {
             cache: RefCell::new(Cache::default()),
+            min_filter_quality,
+            mag_filter_quality,
         }
     }
 
@@ -44,7 +48,7 @@ impl Pipeline {
                 (bounds.y / height_scale) as i32,
                 image,
                 &tiny_skia::PixmapPaint {
-                    quality: tiny_skia::FilterQuality::Bilinear,
+                    quality: if width_scale < 1.0 { self.min_filter_quality } else { self.mag_filter_quality },
                     ..Default::default()
                 },
                 transform,

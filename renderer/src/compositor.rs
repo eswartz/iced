@@ -224,7 +224,7 @@ impl Candidate {
         match self {
             Self::TinySkia => {
                 let (compositor, backend) =
-                    iced_tiny_skia::window::compositor::new();
+                    iced_tiny_skia::window::compositor::new(settings.image_filtering);
 
                 Ok((
                     Compositor::TinySkia(compositor),
@@ -242,6 +242,8 @@ impl Candidate {
                         default_font: settings.default_font,
                         default_text_size: settings.default_text_size,
                         antialiasing: settings.antialiasing,
+                        #[cfg(any(feature="image", feature="svg"))]
+                        image_filtering: settings.image_filtering,
                         ..iced_wgpu::Settings::from_env()
                     },
                     _compatible_window,

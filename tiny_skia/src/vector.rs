@@ -10,12 +10,16 @@ use std::fs;
 
 pub struct Pipeline {
     cache: RefCell<Cache>,
+    min_filter_quality: tiny_skia::FilterQuality,
+    mag_filter_quality: tiny_skia::FilterQuality,
 }
 
 impl Pipeline {
-    pub fn new() -> Self {
+    pub fn new(min_filter_quality: tiny_skia::FilterQuality, mag_filter_quality: tiny_skia::FilterQuality) -> Self {
         Self {
             cache: RefCell::new(Cache::default()),
+            min_filter_quality,
+            mag_filter_quality,
         }
     }
 
@@ -39,11 +43,16 @@ impl Pipeline {
             color,
             Size::new(bounds.width as u32, bounds.height as u32),
         ) {
+            let width_scale = bounds.width / image.width() as f32;
+
             pixels.draw_pixmap(
                 bounds.x as i32,
                 bounds.y as i32,
                 image,
-                &tiny_skia::PixmapPaint::default(),
+                &tiny_skia::PixmapPaint {
+                    quality: if width_scale < 1.0 { self.min_filter_quality } else { self.mag_filter_quality },
+                    ..Default::default()
+                },
                 tiny_skia::Transform::identity(),
                 clip_mask,
             );

@@ -202,6 +202,8 @@ pub trait Application: Sized {
             } else {
                 None
             },
+            #[cfg(any(feature="image", feature="svg"))]
+            image_filtering: settings.image_filtering,
             ..crate::renderer::Settings::default()
         };
 

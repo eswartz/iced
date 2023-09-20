@@ -18,6 +18,7 @@
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 mod antialiasing;
 mod error;
+mod filtering;
 mod primitive;
 mod transformation;
 mod viewport;
@@ -48,5 +49,8 @@ pub use primitive::Primitive;
 pub use renderer::Renderer;
 pub use transformation::Transformation;
 pub use viewport::Viewport;
+
+pub use filtering::FilterQuality;
+pub use filtering::ImageFiltering;
 
 pub use iced_core as core;

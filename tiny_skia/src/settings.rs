@@ -1,4 +1,5 @@
 use crate::core::{Font, Pixels};
+use crate::graphics::ImageFiltering;
 
 /// The settings of a [`Backend`].
 ///
@@ -12,6 +13,11 @@ pub struct Settings {
     ///
     /// By default, it will be set to `16.0`.
     pub default_text_size: Pixels,
+
+    /// The filtering methods to use for images.
+    ///
+    #[cfg(any(feature = "image", feature = "svg"))]
+    pub image_filtering: ImageFiltering,
 }
 
 impl Default for Settings {
@@ -19,6 +25,7 @@ impl Default for Settings {
         Settings {
             default_font: Font::default(),
             default_text_size: Pixels(16.0),
+            image_filtering: ImageFiltering::default(),
         }
     }
 }

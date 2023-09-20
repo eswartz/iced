@@ -45,7 +45,7 @@ impl Backend {
             triangle::Pipeline::new(device, format, settings.antialiasing);
 
         #[cfg(any(feature = "image", feature = "svg"))]
-        let image_pipeline = image::Pipeline::new(device, format);
+        let image_pipeline = image::Pipeline::new(device, format, settings.image_filtering);
 
         Self {
             quad_pipeline,

@@ -1,6 +1,7 @@
 //! Configure a renderer.
+
 use crate::core::{Font, Pixels};
-use crate::graphics::Antialiasing;
+use crate::graphics::{Antialiasing, ImageFiltering};
 
 /// The settings of a [`Backend`].
 ///
@@ -27,6 +28,11 @@ pub struct Settings {
     ///
     /// By default, it is `None`.
     pub antialiasing: Option<Antialiasing>,
+
+    /// The filtering methods to use for images.
+    ///
+    #[cfg(any(feature = "image", feature = "svg"))]
+    pub image_filtering: ImageFiltering,
 }
 
 impl Settings {
@@ -61,6 +67,8 @@ impl Default for Settings {
             default_font: Font::default(),
             default_text_size: Pixels(16.0),
             antialiasing: None,
+            #[cfg(any(feature = "image", feature = "svg"))]
+            image_filtering: Default::default(),
         }
     }
 }

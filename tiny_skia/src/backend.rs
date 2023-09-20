@@ -1,4 +1,6 @@
+
 use crate::core::{Background, Color, Gradient, Rectangle, Vector};
+use crate::graphics::{FilterQuality, ImageFiltering};
 use crate::graphics::backend;
 use crate::graphics::text;
 use crate::graphics::{Damage, Viewport};
@@ -17,15 +19,25 @@ pub struct Backend {
 }
 
 impl Backend {
-    pub fn new() -> Self {
+    pub fn new(image_filtering: ImageFiltering) -> Self {
+        let to_skia_filter = |f| {
+            match f {
+                FilterQuality::Low => tiny_skia::FilterQuality::Nearest,
+                FilterQuality::Medium => tiny_skia::FilterQuality::Bilinear,
+                FilterQuality::High => tiny_skia::FilterQuality::Bicubic,
+            }
+        };
+        let min_filter = to_skia_filter(image_filtering.min_filter);
+        let mag_filter = to_skia_filter(image_filtering.mag_filter);
+
         Self {
             text_pipeline: crate::text::Pipeline::new(),
 
             #[cfg(feature = "image")]
-            raster_pipeline: crate::raster::Pipeline::new(),
+            raster_pipeline: crate::raster::Pipeline::new(min_filter, mag_filter),
 
             #[cfg(feature = "svg")]
-            vector_pipeline: crate::vector::Pipeline::new(),
+            vector_pipeline: crate::vector::Pipeline::new(min_filter, mag_filter),
         }
     }
 
@@ -619,7 +631,7 @@ impl Backend {
 
 impl Default for Backend {
     fn default() -> Self {
-        Self::new()
+        Self::new(ImageFiltering::default())
     }
 }
 

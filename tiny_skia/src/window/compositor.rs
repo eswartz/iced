@@ -1,5 +1,6 @@
 use crate::core::{Color, Rectangle, Size};
 use crate::graphics::compositor::{self, Information};
+use crate::graphics::ImageFiltering;
 use crate::graphics::damage;
 use crate::graphics::{Error, Viewport};
 use crate::{Backend, Primitive, Renderer, Settings};
@@ -28,7 +29,12 @@ impl<Theme> crate::graphics::Compositor for Compositor<Theme> {
         settings: Self::Settings,
         _compatible_window: Option<&W>,
     ) -> Result<(Self, Self::Renderer), Error> {
-        let (compositor, backend) = new();
+        #[cfg(any(feature="image", feature="svg"))]
+        let image_filtering = settings.image_filtering;
+        #[cfg(not(any(feature="image", feature="svg")))]
+        let image_filtering = ImageFiltering::default();
+
+        let (compositor, backend) = new(image_filtering);
 
         Ok((
             compositor,
@@ -121,12 +127,12 @@ impl<Theme> crate::graphics::Compositor for Compositor<Theme> {
     }
 }
 
-pub fn new<Theme>() -> (Compositor<Theme>, Backend) {
+pub fn new<Theme>(image_filtering: ImageFiltering) -> (Compositor<Theme>, Backend) {
     (
         Compositor {
             _theme: PhantomData,
         },
-        Backend::new(),
+        Backend::new(image_filtering),
     )
 }
 
